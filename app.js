@@ -41,14 +41,15 @@ class Peer {
 
 /**
  * 
- * @type {Peer[]}
+ * @type {Peer[]} currently connected peers
  * */
 var peers = [];
+/**
+ * @type {int[]} socketid Hashmap
+ * */
 var socketHashMap = [];
 io.on("connection", (socket) => {
-    console.log("connection");
     InitializePeer(socket);
-
     socket.on("msg", (data) => {
         var msg = data;
         peers.forEach((peer, index) => {
@@ -58,7 +59,11 @@ io.on("connection", (socket) => {
             }
         });
     });
-    
+    socket.on("register", (data) => {
+        var id = socketHashMap[socket];
+        peers[id].name = data.name;
+        peers[id].oculusAvatarID = data.oculusAvatarID;
+    });
     socket.on("disconnect", () => {
         var id = socketHashMap[socket];
         peers=peers.filter((p, i) => {
