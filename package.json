@@ -1,0 +1,12 @@
+{
+  "name": "rtserver",
+  "version": "0.0.0",
+  "description": "RTServer",
+  "main": "app.js",
+  "author": {
+    "name": ""
+  },
+  "dependencies": {
+    "socket.io": "2.3.0"
+  }
+}
