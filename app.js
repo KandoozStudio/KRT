@@ -63,6 +63,14 @@ io.on("connection", (socket) => {
         var id = socketHashMap[socket];
         peers[id].name = data.name;
         peers[id].oculusAvatarID = data.oculusAvatarID;
+
+        peers.forEach((peer, index) => {
+            if (peer.id !== id)// don't send it back to sender
+            {
+                peer.sendMessage("updateData", { "peer": peer }, id);
+            }
+        });
+
     });
     socket.on("disconnect", () => {
         var id = socketHashMap[socket];
@@ -75,10 +83,12 @@ io.on("connection", (socket) => {
 
 /**
  * @param {SocketIO.Socket} socket useer socket
- * 
  */
 function InitializePeer(socket) {
     var peer = new Peer(availableSeats.shift(), socket);
+    peers.forEach((peer) => {
+        peer.sendMessage("spawn", { 'peer': peer }, peer.id);
+    });
     peer.sendMessage("Init", { "peers": peers }, peer.id);
     peers[peer.id] = peer;
     socketHashMap[socket] = peer.id;
