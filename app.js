@@ -2,7 +2,7 @@
 var io = require("socket.io")(3200);
 
 var availableSeats = [];
-availableSeats.push(0, 1, 2, 3, 4, 5, 6);
+availableSeats.push(0, 1, 2, 3, 4, 5, 6, 7, 8);
 
 class Peer {
     /**
@@ -35,7 +35,7 @@ class Peer {
             "data": body,
             "senderID": id
         };
-        this.#socket.emit("msg", b );
+        this.#socket.emit("RTMessage", b );
     }
 }
 
@@ -50,27 +50,38 @@ var peers = [];
 
 var socketHashMap = [];
 io.on("connection", (socket) => {
-    InitializePeer(socket);
-    socket.on("msg", (data) => {
+    var tmpPeer = new Peer(-1, socket);
+
+    tmpPeer.sendMessage("init", "", -1);
+
+    socket.on("RTMessage", (data) => {
         var msg = data;
         peers.forEach((peer, index) => {
-            if (peer.id !== msg.senderID)// don't send it back to sender
+            if (peer.id !== msg.senderID)
             {
                 peer.sendMessage(msg.name, msg.data, msg.senderID);
             }
         });
+
     });
     socket.on("register", (data) => {
-        var id = socketHashMap[socket];
-        peers[id].name = data.name;
-        peers[id].oculusAvatarID = data.oculusAvatarID;
+        console.log(data);
+        var peer = new Peer(availableSeats.shift(), socket);
+        peer.oculusAvatarID = data.id;
+        peer.name = data.userName;
+
+        peer.sendMessage("spawn", { "peers": peers }, peer.id);
 
         peers.forEach((peer, index) => {
-            if (peer.id !== id)// don't send it back to sender
+            if (peer.id !== id)
             {
                 peer.sendMessage("spawn", { "peers": [peer] }, id);
             }
         });
+
+        peers[peer.id] = peer;
+        socketHashMap[socket] = peer.id;
+
 
     });
     socket.on("disconnect", () => {
@@ -82,16 +93,4 @@ io.on("connection", (socket) => {
     });
 });
 
-/**
- * @param {SocketIO.Socket} socket useer socket
- */
-function InitializePeer(socket) {
-    var peer = new Peer(availableSeats.shift(), socket);
-    peers.forEach((peer) => {
-        peer.sendMessage("spawn", { 'peers': [peer] }, peer.id);
-    });
-    peer.sendMessage("spawn", { "peers": peers }, peer.id);
-    peer.sendMessage("init", { "id": peer.id }, peer.id);
-    peers[peer.id] = peer;
-    socketHashMap[socket] = peer.id;
-}
+
