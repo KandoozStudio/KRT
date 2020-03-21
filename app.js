@@ -13,6 +13,8 @@ class Peer {
      * 
      * @param {Number} id the ID of the user, used in communication
      * @param {SocketIO.Socket} socket The socket
+     * @param {String} oculusAvatarID OVRID
+     * @param {string} name the user name
      */
     constructor(id, socket, oculusAvatarID, name) {
         this.id = id;
@@ -64,9 +66,9 @@ io.on("connection", (socket) => {
         });
 
     });
-    socket.on("register", (data) => {
-        console.log(data);
-        var peer = new Peer(availableSeats.shift(), socket, data.data.id, data.data.userName);
+    socket.on("register", (body) => {
+        console.log(body);
+        var peer = new Peer(availableSeats.shift(), socket, " "+body.data.id+" ", ""+" "+body.data.userName+" ");
 
         peer.sendMessage("spawn", { "peers": peers }, peer.id);
 
