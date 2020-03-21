@@ -17,7 +17,7 @@ class Peer {
         this.#socket = socket;
     }
     get socket() {
-        return this.socket;
+        return this.#socket;
     }
     /**
      * 
