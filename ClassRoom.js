@@ -22,7 +22,7 @@ class ClassRoom {
     RemovePeerBySocket(socket) {
         for (var i = 0; i < this.peers.length; i++) {
             if (this.peers[i].socket === socket) {
-                id = this.peers.id;
+                id = this.peers[i].id;
                 this.peers[i].sendMessage("delete", "", this.peers[i].id);
                 this.peers = this.peers.splice(i, 1);
                 return id;
