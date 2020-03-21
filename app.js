@@ -66,7 +66,7 @@ io.on("connection", (socket) => {
     });
     socket.on("register", (data) => {
         console.log(data);
-        var peer = new Peer(availableSeats.shift(), socket, data.id, data.userName);
+        var peer = new Peer(availableSeats.shift(), socket, data.data.id, data.data.userName);
 
         peer.sendMessage("spawn", { "peers": peers }, peer.id);
 
