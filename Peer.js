@@ -12,8 +12,8 @@ class Peer {
      */
     constructor(id, socket, oculusAvatarID, name) {
         this.id = id;
-        this.name = name | "";
-        this.oculusAvatarID = oculusAvatarID | "";
+        this.name = name ;
+        this.oculusAvatarID = oculusAvatarID ;
         this.#socket = socket;
     }
     get socket() {

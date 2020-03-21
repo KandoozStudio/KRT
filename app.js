@@ -20,11 +20,12 @@ io.on("connection", (socket) => {
         classroom.BroadcastMessage(msg.name, msg.data, msg.senderID);
     });
     socket.on("register", (body) => {
+        console.log(body.data);
         var peer = new Peer(availableSeats.shift(), socket, String(body.data.id), String(body.data.userName));
         peer.sendMessage("spawn", classroom, peer.id);
         classroom.BroadcastMessage("spawn", { "peers": [peer] }, peer.id);
         classroom.AddPeer(peer);
-        console.log(classroom);
+        
 
     });
     socket.on("disconnect", () => {
