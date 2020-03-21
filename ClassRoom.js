@@ -23,11 +23,14 @@ class ClassRoom {
         for (var i = 0; i < this.peers.length; i++) {
             if (this.peers[i].socket === socket) {
                 var id = this.peers[i].id;
-                this.peers[i].sendMessage("delete", "", this.peers[i].id);
+                this.peers[i].sendMessage("remove", "", this.peers[i].id);
                 this.peers = this.peers.splice(i, 1);
+                console.log("removed player at " + id);
                 return id;
             }
         }
+        console.log("could not remove shit" );
+
         return -1;
     }
 

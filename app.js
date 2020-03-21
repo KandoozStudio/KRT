@@ -32,7 +32,7 @@ io.on("connection", (socket) => {
         if (id >= 0) {
             availableSeats.push(id);
         }
-
+        console.log(classroom);
     });
 });
 
