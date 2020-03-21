@@ -68,7 +68,6 @@ io.on("connection", (socket) => {
         console.log(data);
         var peer = new Peer(availableSeats.shift(), socket, data.id, data.userName);
 
-
         peer.sendMessage("spawn", { "peers": peers }, peer.id);
 
         peers.forEach((p, index) => {
@@ -80,7 +79,7 @@ io.on("connection", (socket) => {
 
         peers[peer.id] = peer;
         socketHashMap[socket] = peer.id;
-
+        console.log(peers);
 
     });
     socket.on("disconnect", () => {
