@@ -47,6 +47,7 @@ var peers = [];
 /**
  * @type {int[]} socketid Hashmap
  * */
+
 var socketHashMap = [];
 io.on("connection", (socket) => {
     InitializePeer(socket);
@@ -67,7 +68,7 @@ io.on("connection", (socket) => {
         peers.forEach((peer, index) => {
             if (peer.id !== id)// don't send it back to sender
             {
-                peer.sendMessage("updateData", { "peer": peer }, id);
+                peer.sendMessage("spawn", { "peers": [peer] }, id);
             }
         });
 
@@ -87,9 +88,10 @@ io.on("connection", (socket) => {
 function InitializePeer(socket) {
     var peer = new Peer(availableSeats.shift(), socket);
     peers.forEach((peer) => {
-        peer.sendMessage("spawn", { 'peer': peer }, peer.id);
+        peer.sendMessage("spawn", { 'peers': [peer] }, peer.id);
     });
-    peer.sendMessage("Init", { "peers": peers }, peer.id);
+    peer.sendMessage("spawn", { "peers": peers }, peer.id);
+    peer.sendMessage("init", { "id": peer.id }, peer.id);
     peers[peer.id] = peer;
     socketHashMap[socket] = peer.id;
 }
