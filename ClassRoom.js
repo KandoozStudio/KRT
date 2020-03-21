@@ -24,8 +24,9 @@ class ClassRoom {
             if (this.peers[i].socket === socket) {
                 var id = this.peers[i].id;
                 this.peers[i].sendMessage("remove", "", this.peers[i].id);
-                this.peers = this.peers.splice(i-1, 1);
-                console.log("removed player number " + id+":"+i);
+                console.log("removed player number " + id + ":" + i);
+                this.peers.splice(i, 1);
+
                 return id;
             }
         }
