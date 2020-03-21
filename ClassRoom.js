@@ -25,7 +25,7 @@ class ClassRoom {
                 var id = this.peers[i].id;
                 this.peers[i].sendMessage("remove", "", this.peers[i].id);
                 this.peers = this.peers.splice(i, 1);
-                console.log("removed player at " + id);
+                console.log("removed player at " + id+":"+i);
                 return id;
             }
         }
