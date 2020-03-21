@@ -23,7 +23,7 @@ io.on("connection", (socket) => {
         console.log(body.data);
         var peer = new Peer(availableSeats.shift(), socket, String(body.data.id), String(body.data.userName));
         peer.sendMessage("spawn", classroom, peer.id);
-        peer.sendMessage("movePlayer", "", peer.id);
+        peer.sendMessage("movePlayer", {}, peer.id);
         classroom.BroadcastMessage("spawn", { "peers": [peer] }, peer.id);
         classroom.AddPeer(peer);
         
