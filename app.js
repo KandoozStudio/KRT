@@ -72,10 +72,10 @@ io.on("connection", (socket) => {
 
         peer.sendMessage("spawn", { "peers": peers }, peer.id);
 
-        peers.forEach((peer, index) => {
-            if (peer.id !== id)
+        peers.forEach((p, index) => {
+            if (p.id !== peer.id)
             {
-                peer.sendMessage("spawn", { "peers": [peer] }, id);
+                p.sendMessage("spawn", { "peers": [p] }, peer.id);
             }
         });
 
