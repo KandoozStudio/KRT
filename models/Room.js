@@ -1,21 +1,55 @@
 const Peer = require("./Peer");
 
-class ClassRoom {
+class Room {
+
+    /**
+     * @type { Number } the room identifier
+     */
+    id;
+
     /**
      * @type { Peer[] } connected peers
     */
     peers = [];
 
     /**
-     * 
-     * @param {Peer} peer the peer to add to the room
+     * @type { Number } Maximum number of peers the room should have
      */
-    AddPeer(peer) {
-        this.peers.push(peer);
+    maxPeers = 8;
+
+    /**
+     * Sets the room id
+     *
+     * @param {Number} id
+     */
+    setId(id) {
+        this.id = id;
     }
 
     /**
+     * Sets max number of peers
      * 
+     * @param {Number} maxPeers
+     */
+    setMaxPeers(maxPeers) {
+        this.maxPeers = maxPeers;
+    }
+
+    /**
+     *
+     * @param {Peer} peer the peer to add to the room
+     * @returns {Number} the new peer ID
+     * @throws AppError if maxPeers is reached
+     */
+    AddPeer(peer) {
+        if (this.peers.length >= maxPeers) {
+            throw new AppError({ publicMessage: 'Can not add peer, max peers is reached!' });
+        }
+        return this.peers.push(peer);
+    }
+
+    /**
+     *
      * @param {SocketIO.Socket} socket the socket used by the peer to Remove
      * @returns {Number} the Id of the removed player
      */
@@ -35,7 +69,7 @@ class ClassRoom {
     }
 
     /**
-     * 
+     *
      * @param {any} id the peer ID
      * @returns {Peer}  the selected Peer
      */
@@ -63,4 +97,4 @@ class ClassRoom {
     }
 }
 
-module.exports = ClassRoom;
+module.exports = Room;
