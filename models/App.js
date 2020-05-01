@@ -20,10 +20,9 @@ class App {
     /**
      * Generate a new room
      *
-     * @param { Number } maxPeers Maximum number of peers allowed, defaults to 8
      * @returns Room a new room
      */
-    generateRoom(maxPeers = 8) {
+    generateRoom() {
         let newRoom = new Room();
         newRoom.setId(this.rooms.push(newRoom) - 1);
         console.log('room generated')
@@ -45,4 +44,8 @@ class App {
     }
 }
 
-module.exports = App;
+
+const instance = new App();
+Object.seal(instance);
+
+module.exports = instance;

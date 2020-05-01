@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const App = require('../models/App');
-app = new App();
+const app = require('../models/App');
 
 router.post('/', (req, res, next) => {
-    let room = app.generateRoom(req.body.maxPeers);
-    res.end({
+    let room = app.generateRoom();
+    if (req.body && req.body.maxPeers) {
+        room.setMaxPeers(req.body.maxPeers);
+    }
+    return res.json({
         roomID: room.id
     });
 })

@@ -1,11 +1,10 @@
 'use strict';
 const express = require('express');
 const Peer = require("./models/Peer");
-const App = require("./models/App");
+const app = require("./models/App");
 var io = require("socket.io")(3200);
 
 const expressApp = express();
-var app = new App();
 
 app.generateRoom(); //for testing
 app.generateRoom(); //for testing
@@ -13,6 +12,7 @@ app.generateRoom(); //for testing
 
 let routes = require('./routes');
 expressApp.use(routes);
+expressApp.listen(3400)
 
 io.on("connection", (socket) => {
     var room;
