@@ -27,7 +27,8 @@ io.on("connection", (socket) => {
             peer.setId(room.AddPeer(peer));
         }
         catch (error) {
-            peer.sendMessage('error', error.message)
+            peer.sendMessage('error', error.message);
+            
         }
         peer.sendMessage("spawn", room, peer.id);
         peer.sendMessage("movePlayer", {}, peer.id);

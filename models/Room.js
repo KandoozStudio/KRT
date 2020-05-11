@@ -45,10 +45,10 @@ class Room {
         if (this.peers.length >= this.maxPeers) {
             throw new AppError({ publicMessage: 'Can not add peer, max peers is reached!' });
         }
-        peer.on("RTMessage",(msg)=>{
+        peer.socket.on("RTMessage",(msg)=>{
             this.BroadcastMessage(msg.name, msg.data, msg.senderID);
         });
-        peer.on("setVariable",(data)=>{
+        peer.socket.on("setVariable",(data)=>{
             this.BroadcastMessage("setVariable", msg.data, msg.senderID);
             this.variables[data.name]=data.value;
         });
