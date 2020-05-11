@@ -70,7 +70,7 @@ class Room {
             var seat=this.peers[id].id;
             this.availableSeats.push(seat);
             this.peers.splice(id, 1);
-            this.BroadcastMessage("remove", {}, id);
+            this.BroadcastMessage("remove", {}, seat);
             console.log("removed player number " + id + ":" + seat);
         }
         else {
