@@ -14,6 +14,9 @@ let routes = require('./routes');
 expressApp.use(routes);
 expressApp.listen(3400)
 
+setInterval(() => {
+    console.log(app.rooms);
+}, 4000);
 io.on("connection", (socket) => {
     var room;
     try {
@@ -28,8 +31,10 @@ io.on("connection", (socket) => {
         }
         catch (error) {
             peer.sendMessage('error', error.message);
-            
+            console.log(error.message);
+
         }
+        console.log(room);
         peer.sendMessage("spawn", room, peer.id);
         peer.sendMessage("movePlayer", {}, peer.id);
         room.BroadcastMessage("spawn", { "peers": [peer] }, peer.id);
@@ -46,9 +51,12 @@ io.on("connection", (socket) => {
 
 
     socket.on("disconnect", () => {
-        var id = room.RemovePeerBySocket(socket);
-        if (id >= 0) {
-            availableSeats.push(id);
+        try{
+            room.RemovePeerBySocket(socket);
+            console.log(room);
+        }
+        catch  (error){
+            console.log(error.message);
         }
     });
 });
