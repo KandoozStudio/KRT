@@ -67,10 +67,11 @@ class Room {
     RemovePeerBySocket(socket) {
         var id = this.peers.findIndex(peer => peer.socket === socket);
         if (id >= 0) {
-            this.availableSeats.push(this.peers[id].id);
+            var seat=this.peers[id].id;
+            this.availableSeats.push(seat);
             this.peers.splice(id, 1);
             this.BroadcastMessage("remove", {}, id);
-            console.log("removed player number " + id + ":" + i);
+            console.log("removed player number " + id + ":" + seat);
         }
         else {
             throw new AppError({ publicMessage: 'Can not remove peer' });
