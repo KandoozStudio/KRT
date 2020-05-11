@@ -17,19 +17,8 @@ expressApp.listen(3400)
 io.on("connection", (socket) => {
     var room;
     try {
-        room = app.getRoomById(socket.handshake.query.room);
-    }
-    catch (error) {
-        console.log('error! ', error.message);
-    }
-
-    socket.on("RTMessage", (data) => {
-        var msg = data;
-        room.BroadcastMessage(msg.name, msg.data, msg.senderID);
-    });
-
-    socket.on("register", (body) => {
-        var peer = new Peer(socket, String(body.data.id), String(body.data.userName));
+        room = app.getRoomById(parseInt( socket.handshake.query.room));
+        var peer = new Peer(socket, String(socket.handshake.query.id), String(socket.handshake.query.userName));
         if (!room) {
             peer.sendMessage('error', 'Invalid request!');
             return;
@@ -43,7 +32,17 @@ io.on("connection", (socket) => {
         peer.sendMessage("spawn", room, peer.id);
         peer.sendMessage("movePlayer", {}, peer.id);
         room.BroadcastMessage("spawn", { "peers": [peer] }, peer.id);
+    }
+    catch (error) {
+        console.log('error! ', error.message);
+    }
+
+    socket.on("RTMessage", (data) => {
+        var msg = data;
+        room.BroadcastMessage(msg.name, msg.data, msg.senderID);
     });
+
+
 
     socket.on("disconnect", () => {
         var id = room.RemovePeerBySocket(socket);

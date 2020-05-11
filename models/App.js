@@ -28,7 +28,7 @@ class App {
         if(this.rooms.length > 1000) throw new AppError({message: "Too many rooms!"})
         let newRoom = new Room();
         newRoom.setId(this.rooms.push(newRoom) - 1);
-        console.log('room generated')
+        console.log('room generated with ID'+newRoom.id);
         return newRoom;
     }
 
