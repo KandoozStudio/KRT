@@ -42,7 +42,7 @@ class Room {
      * @throws AppError if maxPeers is reached
      */
     AddPeer(peer) {
-        if (this.peers.length >= maxPeers) {
+        if (this.peers.length >= this.maxPeers) {
             throw new AppError({ publicMessage: 'Can not add peer, max peers is reached!' });
         }
         peer.on("RTMessage",(msg)=>{
