@@ -1,7 +1,7 @@
 const Peer = require("./Peer");
 
 class Room {
-
+    availableSeats = [];
     /**
      * @type { Number } the room identifier
      */
@@ -11,7 +11,7 @@ class Room {
      * @type { Peer[] } connected peers
     */
     peers = [];
-    variables=[];
+    variables = [];
     /**
      * @type { Number } Maximum number of peers the room should have
      */
@@ -28,11 +28,15 @@ class Room {
 
     /**
      * Sets max number of peers
-     * 
+     *
      * @param {Number} maxPeers
      */
     setMaxPeers(maxPeers) {
         this.maxPeers = maxPeers;
+        this.availableSeats = new Array(maxPeers);
+        for (let i = 0; i < this.availableSeats.length; i++) {
+            this.availableSeats[i] = i + 1;
+        }
     }
 
     /**
@@ -45,34 +49,32 @@ class Room {
         if (this.peers.length >= this.maxPeers) {
             throw new AppError({ publicMessage: 'Can not add peer, max peers is reached!' });
         }
-        peer.socket.on("RTMessage",(msg)=>{
+        peer.socket.on("RTMessage", (msg) => {
             this.BroadcastMessage(msg.name, msg.data, msg.senderID);
         });
-        peer.socket.on("setVariable",(data)=>{
+        peer.socket.on("setVariable", (data) => {
             this.BroadcastMessage("setVariable", msg.data, msg.senderID);
-            this.variables[data.name]=data.value;
+            this.variables[data.name] = data.value;
         });
-        return this.peers.push(peer);
+        this.peers.push(peer);
+        return this.availableSeats.shift();
     }
 
     /**
      *
      * @param {SocketIO.Socket} socket the socket used by the peer to Remove
-     * @returns {Number} the Id of the removed player
      */
     RemovePeerBySocket(socket) {
-        for (var i = 0; i < this.peers.length; i++) {
-            if (this.peers[i].socket === socket) {
-                var id = this.peers[i].id;
-                this.peers[i].sendMessage("remove", {}, this.peers[i].id);
-                console.log("removed player number " + id + ":" + i);
-                this.peers.splice(i, 1);
-                return id;
-            }
+        var id = this.peers.findIndex(peer => peer.socket === socket);
+        if (id >= 0) {
+            this.availableSeats.push(this.peers[id].id);
+            this.peers.splice(id, 1);
+            this.BroadcastMessage("remove", {}, id);
+            console.log("removed player number " + id + ":" + i);
         }
-        console.log("could not remove shit" );
-
-        return -1;
+        else {
+            throw new AppError({ publicMessage: 'Can not remove peer' });
+        }
     }
 
     /**

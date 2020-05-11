@@ -1,3 +1,7 @@
+#VS code
+.vs/
+.vscode
+
 # Logs
 logs
 *.log
