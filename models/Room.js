@@ -1,7 +1,7 @@
 const Peer = require("./Peer");
 
 class Room {
-    availableSeats = [];
+    availableSeats = [1,2,3,4,5,6,7,8];
     /**
      * @type { Number } the room identifier
      */
