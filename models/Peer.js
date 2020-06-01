@@ -42,7 +42,7 @@ class Peer {
     sendMessage(message, body, id) {
         var b = {
             "name": message,
-            "data": body,
+            "data": JSON.stringify(body),
             "senderID": id
         };
         this.#socket.emit("RTMessage", b);
