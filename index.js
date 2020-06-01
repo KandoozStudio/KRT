@@ -20,8 +20,10 @@ setInterval(() => {
 io.on("connection", (socket) => {
     var room;
     try {
-        room = app.getRoomById(parseInt( socket.handshake.query.room));
+        room = app.getRoomById(parseInt(socket.handshake.query.room));
         var peer = new Peer(socket, String(socket.handshake.query.id), String(socket.handshake.query.userName));
+        peer.isTeacher = socket.handshake.query.isTeacher || false;
+
         if (!room) {
             peer.sendMessage('error', 'Invalid request!');
             return;
@@ -34,7 +36,6 @@ io.on("connection", (socket) => {
             console.log(error.message);
 
         }
-        console.log(room);
         peer.sendMessage("spawn", room, peer.id);
         peer.sendMessage("movePlayer", {}, peer.id);
         room.BroadcastMessage("spawn", { "peers": [peer] }, peer.id);
@@ -47,15 +48,12 @@ io.on("connection", (socket) => {
         var msg = data;
         room.BroadcastMessage(msg.name, msg.data, msg.senderID);
     });
-
-
-
     socket.on("disconnect", () => {
-        try{
+        try {
             room.RemovePeerBySocket(socket);
             console.log(room);
         }
-        catch  (error){
+        catch (error) {
             console.log(error.message);
         }
     });

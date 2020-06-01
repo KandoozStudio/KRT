@@ -8,6 +8,7 @@ class Peer {
      * @type {Number} id the ID of the user, used in communication
      */
     id;
+    isTeacher=false;
 
     /**
      *

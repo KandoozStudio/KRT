@@ -1,7 +1,7 @@
 const Peer = require("./Peer");
 
 class Room {
-    availableSeats = [1,2,3,4,5,6,7,8];
+    availableSeats = [1, 2, 3, 4, 5, 6, 7, 8];
     /**
      * @type { Number } the room identifier
      */
@@ -49,15 +49,24 @@ class Room {
         if (this.peers.length >= this.maxPeers) {
             throw new AppError({ publicMessage: 'Can not add peer, max peers is reached!' });
         }
-        peer.socket.on("RTMessage", (msg) => {
-            this.BroadcastMessage(msg.name, msg.data, msg.senderID);
-        });
-        peer.socket.on("setVariable", (data) => {
-            this.BroadcastMessage("setVariable", msg.data, msg.senderID);
-            this.variables[data.name] = data.value;
-        });
-        this.peers.push(peer);
-        return this.availableSeats.shift();
+
+
+        else {
+            peer.socket.on("RTMessage", (msg) => {
+                this.BroadcastMessage(msg.name, msg.data, msg.senderID);
+            });
+            peer.socket.on("setVariable", (data) => {
+                this.BroadcastMessage("setVariable", msg.data, msg.senderID);
+                this.variables[data.name] = data.value;
+            });
+            this.peers.push(peer);
+            if (peer.isTeacher) {
+                return 0;
+            }
+            else {
+                return this.availableSeats.shift();
+            }
+        }
     }
 
     /**
@@ -67,7 +76,7 @@ class Room {
     RemovePeerBySocket(socket) {
         var id = this.peers.findIndex(peer => peer.socket === socket);
         if (id >= 0) {
-            var seat=this.peers[id].id;
+            var seat = this.peers[id].id;
             this.availableSeats.push(seat);
             this.peers.splice(id, 1);
             this.BroadcastMessage("remove", {}, seat);
