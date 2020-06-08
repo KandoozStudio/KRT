@@ -9,6 +9,7 @@ class Room {
      * @type { Peer[] } connected peers
     */
     peers = [];
+
     /**
      * @type { Number } Maximum number of peers the room should have
      */
@@ -16,6 +17,8 @@ class Room {
     
     variables = [];
     #currentPlayers = 1;
+    #hashedPeers = [];
+
     /**
      * Sets the room id
      *
@@ -46,8 +49,8 @@ class Room {
      */
     AddPeer(peer) {
         var hash = "o" + peer.oculusAvatarID;
-        if (this.peers[hash]) {
-            peer.id = this.peers[hash].id;
+        if (this.#hashedPeers[hash]) {
+            peer.id = this.#hashedPeers[hash].id;
         }
         else if (this.peers.length >= this.maxPeers) {
             throw new AppError({ publicMessage: 'Can not add peer, max peers is reached!' });
@@ -59,8 +62,9 @@ class Room {
             else {
                 peer.id = this.#currentPlayers++;
             }
+            this.peers.push(peer);
         }
-        this.peers[hash] = peer;
+        this.#hashedPeers[hash] = peer;
         this.RegisterPeerMessages(peer);
         this.SendInitMessages(peer);
         return peer.id;
@@ -69,7 +73,7 @@ class Room {
 
     SendInitMessages(peer) {
         peer.sendMessage("spawn", this, peer.id);
-        peer.sendMessage("movePlayer", {}, peer.id);
+        //peer.sendMessage("movePlayer", {}, peer.id);
         this.BroadcastMessage("spawn", { "peers": [peer] }, peer.id);
     }
 
@@ -113,8 +117,12 @@ class Room {
     BroadcastMessage(name, data, sender) {
         for (var i = 0; i < this.peers.length; i++) {
             if (sender !== this.peers[i].id) {
-                this.peers[i].sendMessage(name, data, sender);
-
+                try {
+                    this.peers[i].sendMessage(name, data, sender);
+                }
+                catch (ex) {
+                    console.log(ex);
+                }
             }
         }
     }
