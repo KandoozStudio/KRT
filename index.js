@@ -14,9 +14,7 @@ let routes = require('./routes');
 expressApp.use(routes);
 expressApp.listen(3400)
 
-setInterval(() => {
-    console.log(app.rooms);
-}, 4000);
+
 io.on("connection", (socket) => {
     var room;
     try {
@@ -36,9 +34,7 @@ io.on("connection", (socket) => {
             console.log(error.message);
 
         }
-        peer.sendMessage("spawn", room, peer.id);
-        peer.sendMessage("movePlayer", {}, peer.id);
-        room.BroadcastMessage("spawn", { "peers": [peer] }, peer.id);
+        
     }
     catch (error) {
         console.log('error! ', error.message);

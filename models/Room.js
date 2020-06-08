@@ -1,22 +1,21 @@
 const Peer = require("./Peer");
 
 class Room {
-    availableSeats = [1, 2, 3, 4, 5, 6, 7, 8];
     /**
      * @type { Number } the room identifier
      */
     id;
-
     /**
      * @type { Peer[] } connected peers
     */
     peers = [];
-    variables = [];
     /**
      * @type { Number } Maximum number of peers the room should have
      */
     maxPeers = 8;
-
+    
+    variables = [];
+    #currentPlayers = 1;
     /**
      * Sets the room id
      *
@@ -46,27 +45,32 @@ class Room {
      * @throws AppError if maxPeers is reached
      */
     AddPeer(peer) {
-        if (this.peers.length >= this.maxPeers) {
+        var hash = "o" + peer.oculusAvatarID;
+        if (this.peers[hash]) {
+            peer.id = this.peers[hash].id;
+        }
+        else if (this.peers.length >= this.maxPeers) {
             throw new AppError({ publicMessage: 'Can not add peer, max peers is reached!' });
         }
-
-
         else {
-            peer.socket.on("RTMessage", (msg) => {
-                this.BroadcastMessage(msg.name, msg.data, msg.senderID);
-            });
-            peer.socket.on("setVariable", (data) => {
-                this.BroadcastMessage("setVariable", msg.data, msg.senderID);
-                this.variables[data.name] = data.value;
-            });
-            this.peers.push(peer);
-            if (peer.isTeacher) {
-                return 0;
+            if (peer.isTeacher == "true") {
+                peer.id = 0;
             }
             else {
-                return this.availableSeats.shift();
+                peer.id = this.#currentPlayers++;
             }
         }
+        this.peers[hash] = peer;
+        this.RegisterPeerMessages(peer);
+        this.SendInitMessages(peer);
+        return peer.id;
+
+    }
+
+    SendInitMessages(peer) {
+        peer.sendMessage("spawn", this, peer.id);
+        peer.sendMessage("movePlayer", {}, peer.id);
+        this.BroadcastMessage("spawn", { "peers": [peer] }, peer.id);
     }
 
     /**
@@ -113,6 +117,16 @@ class Room {
 
             }
         }
+    }
+
+    RegisterPeerMessages(peer) {
+        peer.socket.on("RTMessage", (msg) => {
+            this.BroadcastMessage(msg.name, msg.data, msg.senderID);
+        });
+        peer.socket.on("setVariable", (data) => {
+            this.BroadcastMessage("setVariable", msg.data, msg.senderID);
+            this.variables[data.name] = data.value;
+        });
     }
 }
 
