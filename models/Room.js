@@ -62,11 +62,11 @@ class Room {
             else {
                 peer.id = this.#currentPlayers++;
             }
-            this.peers.push(peer);
         }
         this.#hashedPeers[hash] = peer;
         this.RegisterPeerMessages(peer);
         this.SendInitMessages(peer);
+        this.peers.push(peer);
         return peer.id;
 
     }
@@ -82,13 +82,12 @@ class Room {
      * @param {SocketIO.Socket} socket the socket used by the peer to Remove
      */
     RemovePeerBySocket(socket) {
-        var id = this.peers.findIndex(peer => peer.socket === socket);
-        if (id >= 0) {
-            var seat = this.peers[id].id;
-            this.availableSeats.push(seat);
-            this.peers.splice(id, 1);
+        var index = this.peers.findIndex(peer => peer.socket === socket);
+        if (index >= 0) {
+            var seat = this.peers[index].id;
+            this.peers.splice(index, 1);
             this.BroadcastMessage("remove", {}, seat);
-            console.log("removed player number " + id + ":" + seat);
+            console.log("removed player number " + index + ":" + seat);
         }
         else {
             throw new AppError({ publicMessage: 'Can not remove peer' });
@@ -116,7 +115,7 @@ class Room {
      */
     BroadcastMessage(name, data, sender) {
         for (var i = 0; i < this.peers.length; i++) {
-            if (sender !== this.peers[i].id) {
+            if (sender != this.peers[i].id) {
                 try {
                     this.peers[i].sendMessage(name, data, sender);
                 }
@@ -132,7 +131,7 @@ class Room {
             this.BroadcastMessage(msg.name, msg.data, msg.senderID);
         });
         peer.socket.on("setVariable", (data) => {
-            this.BroadcastMessage("setVariable", msg.data, msg.senderID);
+             this.BroadcastMessage("variableSet",  data, -2);
             this.variables[data.name] = data.value;
         });
     }
